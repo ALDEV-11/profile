@@ -1,0 +1,114 @@
+{
+  "$schema": "https://laravel.com/docs/13.x/project-structure",
+  "name": "personal-profile",
+  "description": "Personal profile & personal branding website (Laravel 13)",
+  "php": "^8.3",
+  "database": {
+    "connection": "mysql",
+    "host": "127.0.0.1",
+    "port": 3306,
+    "database": "profile",
+    "username": "root",
+    "password": "root"
+  },
+  "mail": {
+    "mailer": "log",
+    "from_address": "hello@example.com",
+    "queue_connection": "database",
+    "queued_jobs": [
+      "SendContactMessageNotification"
+    ],
+    "mailables": [
+      "ContactMessageNotification"
+    ]
+  },
+  "queue": {
+    "connection": "database"
+  },
+  "cache": {
+    "store": "database"
+  },
+  "session": {
+    "driver": "database"
+  },
+  "broadcasting": {
+    "connection": "pusher",
+    "channels": [
+      "messages"
+    ]
+  },
+  "packages": {
+    "required": {
+      "php": "^8.3",
+      "laravel/framework": "^13.8",
+      "laravel/tinker": "^3.0",
+      "intervention/image-laravel": "^4.1",
+      "intervention/image": "^4.0",
+      "pusher/pusher-php-server": "^7.2"
+    },
+    "require-dev": {
+      "fakerphp/faker": "^1.23",
+      "laravel/pail": "^1.2.5",
+      "laravel/pao": "^1.0.6",
+      "laravel/pint": "^1.27",
+      "mockery/mockery": "^1.6",
+      "nunomaduro/collision": "^8.6",
+      "phpunit/phpunit": "^12.5.12"
+    },
+    "npm": {
+      "chart.js": "^4.5",
+      "tailwindcss": "^4.0",
+      "vite": "^8.0"
+    }
+  },
+  "image_processing": {
+    "driver": "gd",
+    "profile_image": {
+      "size": "500x500"
+    },
+    "gallery_sizes": {
+      "thumbnail": "300x300",
+      "medium": "600x600",
+      "large": "1200x1200"
+    },
+    "storage_path": "storage/app/public"
+  },
+  "tables": [
+    "users",
+    "profiles",
+    "educations",
+    "galleries",
+    "social_medias",
+    "contact_messages",
+    "theme_settings",
+    "visitors",
+    "jobs"
+  ],
+  "directory_structure": {
+    "app": {
+      "Http": {
+        "Controllers": {
+          "Admin": "Admin dashboard controllers",
+          "Public": "Public website controllers"
+        },
+        "Middleware": "e.g. TrackVisitor middleware"
+      },
+      "Models": "Profile, Education, Gallery, SocialMedia, ContactMessage, ThemeSetting, Visitor",
+      "Jobs": "SendContactMessageNotification",
+      "Mail": "ContactMessageNotification",
+      "Services": "AnalyticsService, ImageProcessor"
+    },
+    "resources": {
+      "views": {
+        "222": "Admin dashboard (Sneat template)",
+        "layouts": "Public site layouts",
+        "pages": "Public site sections (hero, about, education, gallery, contact)",
+        "partials": "Shared partials (navbar, footer, social)"
+      }
+    },
+    "public": {
+      "dist-dashboard": "Sneat admin assets",
+      "storage": "symlink to storage/app/public"
+    }
+  }
+}
