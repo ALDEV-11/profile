@@ -27,9 +27,7 @@ Route::middleware('track.visitors')->group(function () {
         ->name('contact.store');
 });
 
-// ============================================================
 // Admin section (kept under the "222" prefix)
-// ============================================================
 Route::prefix('222')->group(function () {
     // ── Authentication (guests only) ──────────────────
     Route::middleware('guest')->group(function () {

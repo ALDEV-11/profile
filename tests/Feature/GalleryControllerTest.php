@@ -181,6 +181,31 @@ class GalleryControllerTest extends TestCase
         Storage::disk('public')->assertExists($gallery->image_path);
     }
 
+    public function test_home_gallery_shows_latest_photos_first(): void
+    {
+        $user = $this->actingAsAdmin();
+
+        for ($i = 1; $i <= 7; $i++) {
+            $gallery = Gallery::create([
+                'user_id' => $user->id,
+                'image_path' => "galleries/photo-{$i}-large.jpg",
+                'caption' => "Photo {$i}",
+                'category' => GalleryCategory::Project,
+                'order' => $i,
+            ]);
+
+            $gallery->forceFill([
+                'created_at' => now()->subDays(8 - $i),
+                'updated_at' => now()->subDays(8 - $i),
+            ])->save();
+        }
+
+        $this->get(route('home'))
+            ->assertOk()
+            ->assertSee('Photo 7')
+            ->assertDontSee('Photo 1');
+    }
+
     public function test_destroy_soft_deletes_and_removes_files(): void
     {
         Storage::fake('public');

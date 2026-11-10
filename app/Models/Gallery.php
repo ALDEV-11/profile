@@ -37,7 +37,7 @@ class Gallery extends Model
 
     public function scopeOrdered(Builder $query): Builder
     {
-        return $query->orderBy('order')->orderByDesc('created_at');
+        return $query->orderByDesc('created_at')->orderByDesc('id');
     }
 
     /**
