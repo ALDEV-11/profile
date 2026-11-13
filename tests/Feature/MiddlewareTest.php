@@ -2,8 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Models\AuthSession;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Tests\TestCase;
 
@@ -139,6 +141,14 @@ class MiddlewareTest extends TestCase
     public function test_otp_verification_page_is_reachable_when_2fa_pending(): void
     {
         $user = User::factory()->create(['two_factor_enabled' => true]);
+
+        AuthSession::create([
+            'user_id' => $user->id,
+            'otp_hash' => Hash::make('1234'),
+            'expires_at' => now()->addMinutes(5),
+            'attempts' => 0,
+            'last_sent_at' => now(),
+        ]);
 
         $this->actingAs($user)->get(route('two-factor.verify'))->assertOk();
     }

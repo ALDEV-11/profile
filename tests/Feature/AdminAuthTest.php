@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Mail\OtpMail;
+use App\Models\AuthSession;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
@@ -65,7 +67,7 @@ class AdminAuthTest extends TestCase
         $this->assertGuest();
     }
 
-    public function test_login_with_2fa_redirects_to_otp_page_and_queues_mail(): void
+    public function test_login_with_2fa_redirects_to_otp_page_and_sends_mail(): void
     {
         Mail::fake();
 
@@ -80,12 +82,12 @@ class AdminAuthTest extends TestCase
             'password' => 'password',
         ])->assertRedirect(route('two-factor.verify'));
 
-        $user->refresh();
+        $session = AuthSession::activeFor($user->id);
 
-        $this->assertNotNull($user->two_factor_otp);
-        $this->assertTrue($user->two_factor_otp_expires_at->isFuture());
+        $this->assertNotNull($session);
+        $this->assertTrue($session->expires_at->isFuture());
 
-        Mail::assertQueued(\App\Mail\OtpMail::class);
+        Mail::assertSent(OtpMail::class);
 
         // Not yet verified → dashboard still blocked
         $this->get(route('dashboard'))->assertRedirect(route('two-factor.verify'));
@@ -93,6 +95,8 @@ class AdminAuthTest extends TestCase
 
     public function test_otp_verification_grants_dashboard_access(): void
     {
+        Mail::fake();
+
         $user = User::factory()->create([
             'email' => 'admin@example.com',
             'password' => 'password',
@@ -104,14 +108,18 @@ class AdminAuthTest extends TestCase
             'password' => 'password',
         ]);
 
-        $user->refresh();
-        $otp = $user->two_factor_otp;
+        $otp = null;
+        Mail::assertSent(OtpMail::class, function (OtpMail $mail) use (&$otp) {
+            $otp = $mail->otp;
+
+            return true;
+        });
 
         $this->post(route('two-factor.verify.post'), ['otp' => $otp])
             ->assertRedirect(route('dashboard'));
 
-        $user->refresh();
-        $this->assertNull($user->two_factor_otp);
+        $this->assertDatabaseCount('auth_sessions', 0);
+        $this->assertTrue(session('two_factor_authenticated'));
         $this->get(route('dashboard'))->assertOk();
     }
 
