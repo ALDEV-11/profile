@@ -515,6 +515,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const lightboxCaption = lightbox?.querySelector('.lightbox-caption');
   const lightboxMeta = lightbox?.querySelector('.lightbox-meta');
   const lightboxCounter = lightbox?.querySelector('.lightbox-counter');
+  const carouselItems = document.querySelectorAll('.gallery-carousel-item');
   let lightboxItems = [];
   let lightboxIndex = 0;
 
@@ -534,8 +535,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function openLightbox(item) {
-    lightboxItems = visibleGalleryItems();
-    lightboxIndex = lightboxItems.indexOf(item);
+    lightboxItems = Array.from(carouselItems);
+    const itemId = item.dataset.galleryId;
+    lightboxIndex = lightboxItems.findIndex(
+      carouselItem => carouselItem.dataset.galleryId === itemId
+    );
     if (lightboxIndex === -1) return;
 
     renderLightbox();

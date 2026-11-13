@@ -75,7 +75,7 @@
     <x-education-timeline :educations="$educations" />
 
     <!-- GALLERY SECTION -->
-    <x-gallery-section :galleries="$galleries" />
+    <x-gallery-section :galleries="$featuredGalleries" :carousel-galleries="$galleries" />
 
     <!-- CONTACT SECTION -->
     <x-contact-section :fullName="$fullName" :tagline="$tagline" :email="$email" :phone="$phone" :address="$address" />

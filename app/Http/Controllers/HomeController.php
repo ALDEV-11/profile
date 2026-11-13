@@ -24,13 +24,15 @@ class HomeController extends Controller
         $hobbies = Hobby::ordered()->get();
         $educations = Education::ordered()->get();
         $galleries = Gallery::ordered()->get();
+        $featuredGalleries = $galleries->take(6);
 
         return view('welcome', compact(
             'profile',
             'socialMedias',
             'hobbies',
             'educations',
-            'galleries'
+            'galleries',
+            'featuredGalleries'
         ));
     }
 }

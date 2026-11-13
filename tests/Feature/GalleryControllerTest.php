@@ -181,7 +181,7 @@ class GalleryControllerTest extends TestCase
         Storage::disk('public')->assertExists($gallery->image_path);
     }
 
-    public function test_home_gallery_shows_latest_photos_first(): void
+    public function test_home_gallery_shows_six_latest_photos_first(): void
     {
         $user = $this->actingAsAdmin();
 
@@ -200,10 +200,17 @@ class GalleryControllerTest extends TestCase
             ])->save();
         }
 
-        $this->get(route('home'))
+        $response = $this->get(route('home'));
+
+        $response
             ->assertOk()
             ->assertSee('Photo 7')
-            ->assertDontSee('Photo 1');
+            ->assertSee('Photo 1');
+
+        $this->assertSame(
+            6,
+            substr_count($response->getContent(), '<figure class="gallery-item"')
+        );
     }
 
     public function test_destroy_soft_deletes_and_removes_files(): void

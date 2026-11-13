@@ -1,7 +1,11 @@
 {{-- resources/views/components/gallery-section.blade.php --}}
-@props(['galleries' => collect()])
+@props(['galleries' => collect(), 'carouselGalleries' => null])
 
-@if($galleries->isNotEmpty())
+@php
+    $carouselGalleries = $carouselGalleries ?? $galleries;
+@endphp
+
+@if($carouselGalleries->isNotEmpty())
 <section class="gallery-section" id="gallery">
     <div class="gallery-container">
 
@@ -27,7 +31,7 @@
                 $catVal = $gallery->category instanceof \BackedEnum ? $gallery->category->value : (string)$gallery->category;
                 $catLabel = $gallery->category instanceof \App\Enums\GalleryCategory ? $gallery->category->label() : Str::headline($catVal);
             @endphp
-            <figure class="gallery-item" data-category="{{ $catVal }}">
+            <figure class="gallery-item" data-category="{{ $catVal }}" data-gallery-id="{{ $gallery->id }}">
                 <div class="gallery-card" 
                     tabindex="0" 
                     role="button"
@@ -59,6 +63,23 @@
                     </div>
                 </div>
             </figure>
+            @endforeach
+        </div>
+
+        <div class="gallery-carousel-data" hidden aria-hidden="true">
+            @foreach($carouselGalleries as $gallery)
+                @php
+                    $catVal = $gallery->category instanceof \BackedEnum ? $gallery->category->value : (string)$gallery->category;
+                    $catLabel = $gallery->category instanceof \App\Enums\GalleryCategory ? $gallery->category->label() : Str::headline($catVal);
+                @endphp
+                <div class="gallery-carousel-item" data-gallery-id="{{ $gallery->id }}">
+                    <div
+                        class="gallery-card"
+                        data-large="{{ $gallery->imageUrl('large') }}"
+                        data-caption="{{ $gallery->caption }}"
+                        data-category-label="{{ $catLabel }}"
+                        data-date="{{ $gallery->created_at->format('d M Y') }}"></div>
+                </div>
             @endforeach
         </div>
 
