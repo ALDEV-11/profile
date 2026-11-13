@@ -11,8 +11,7 @@ class GalleryService
 {
     public function __construct(
         protected ImageProcessingService $images,
-    ) {
-    }
+    ) {}
 
     /**
      * List the user's gallery photos, newest first (12 per page).
@@ -25,8 +24,8 @@ class GalleryService
             ->where('user_id', $userId)
             ->when($filters['q'] ?? null, function (Builder $query, string $q) {
                 $query->where(function (Builder $inner) use ($q) {
-                    $inner->where('caption', 'like', "%{$q}%")
-                        ->orWhere('category', 'like', "%{$q}%");
+                    $inner->whereLike('caption', "%{$q}%", caseSensitive: false)
+                        ->orWhereLike('category', "%{$q}%", caseSensitive: false);
                 });
             })
             ->orderByDesc('created_at')

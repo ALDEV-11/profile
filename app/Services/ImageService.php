@@ -5,8 +5,8 @@ namespace App\Services;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Intervention\Image\Laravel\Facades\Image as InterventionImage;
 use Intervention\Image\Interfaces\ImageInterface;
+use Intervention\Image\Laravel\Facades\Image as InterventionImage;
 use RuntimeException;
 
 class ImageService
@@ -32,9 +32,13 @@ class ImageService
         $extension = $this->pickExtension($image, $file);
         $path = $this->destinationPath($directory, $extension);
 
-        $this->ensureDirectory($directory);
+        $options = $extension === 'png' ? [] : ['quality' => 80];
+        $encoded = $image->encodeUsingFileExtension($extension, ...$options);
 
-        $image->save(Storage::disk('public')->path($path));
+        Storage::disk('public')->put($path, (string) $encoded, [
+            'ContentType' => $encoded->mediaType(),
+            'CacheControl' => 'public, max-age=31536000, immutable',
+        ]);
 
         return $path;
     }
@@ -96,17 +100,5 @@ class ImageService
     protected function destinationPath(string $directory, string $extension): string
     {
         return trim($directory, '/').'/'.Str::uuid().'.'.$extension;
-    }
-
-    /**
-     * Ensure the target directory exists on the public disk.
-     */
-    protected function ensureDirectory(string $directory): void
-    {
-        $disk = Storage::disk('public');
-
-        if (! $disk->exists($directory)) {
-            $disk->makeDirectory($directory);
-        }
     }
 }

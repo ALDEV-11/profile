@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 #[Fillable(['user_id', 'full_name', 'about_me', 'tagline', 'email', 'phone', 'address', 'profile_image'])]
@@ -34,7 +35,7 @@ class Profile extends Model
         }
 
         if (Str::startsWith($this->profile_image, ['profiles/', 'galleries/'])) {
-            return asset('storage/'.$this->profile_image);
+            return Storage::disk('public')->url($this->profile_image);
         }
 
         return asset($this->profile_image);

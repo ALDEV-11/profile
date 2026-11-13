@@ -58,9 +58,9 @@ class ContactMessage extends Model
     {
         return $query->when($term, function (Builder $query, string $term) {
             $query->where(function (Builder $inner) use ($term) {
-                $inner->where('name', 'like', "%{$term}%")
-                    ->orWhere('email', 'like', "%{$term}%")
-                    ->orWhere('subject', 'like', "%{$term}%");
+                $inner->whereLike('name', "%{$term}%", caseSensitive: false)
+                    ->orWhereLike('email', "%{$term}%", caseSensitive: false)
+                    ->orWhereLike('subject', "%{$term}%", caseSensitive: false);
             });
         });
     }

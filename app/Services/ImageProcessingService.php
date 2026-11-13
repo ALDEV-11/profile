@@ -5,9 +5,9 @@ namespace App\Services;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Intervention\Image\EncodedImage;
 use Intervention\Image\Interfaces\ImageInterface;
 use Intervention\Image\Laravel\Facades\Image as InterventionImage;
-use RuntimeException;
 
 class ImageProcessingService
 {
@@ -38,7 +38,7 @@ class ImageProcessingService
     /**
      * Encode the image as an optimised JPEG (quality 80).
      */
-    public function optimize(ImageInterface $image): \Intervention\Image\EncodedImage
+    public function optimize(ImageInterface $image): EncodedImage
     {
         return $image->encodeUsingMediaType('image/jpeg', self::JPEG_QUALITY);
     }
@@ -65,13 +65,19 @@ class ImageProcessingService
     {
         $slug = Str::uuid();
 
-        $this->ensureDirectory($directory);
-
         foreach (self::SIZES as $name => $maxEdge) {
             $image = $this->decode($file);
             $variant = $this->resize($image, $maxEdge);
             $encoded = $this->optimize($variant);
-            $encoded->save($this->diskPath($directory, "{$slug}-{$name}.jpg"));
+
+            Storage::disk('public')->put(
+                trim($directory, '/')."/{$slug}-{$name}.jpg",
+                (string) $encoded,
+                [
+                    'ContentType' => 'image/jpeg',
+                    'CacheControl' => 'public, max-age=31536000, immutable',
+                ],
+            );
         }
 
         return trim($directory, '/')."/{$slug}-large.jpg";
@@ -97,26 +103,6 @@ class ImageProcessingService
             if ($disk->exists($path)) {
                 $disk->delete($path);
             }
-        }
-    }
-
-    /**
-     * Build the absolute filesystem path for a stored path.
-     */
-    protected function diskPath(string $directory, string $filename): string
-    {
-        return Storage::disk('public')->path(trim($directory, '/').'/'.$filename);
-    }
-
-    /**
-     * Ensure the target directory exists on the public disk.
-     */
-    protected function ensureDirectory(string $directory): void
-    {
-        $disk = Storage::disk('public');
-
-        if (! $disk->exists($directory)) {
-            $disk->makeDirectory($directory);
         }
     }
 }

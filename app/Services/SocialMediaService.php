@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\SocialMedia;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 
 class SocialMediaService
 {
@@ -38,8 +37,8 @@ class SocialMediaService
             ->where('user_id', $userId)
             ->when($filters['q'] ?? null, function (Builder $query, string $q) {
                 $query->where(function (Builder $inner) use ($q) {
-                    $inner->where('platform', 'like', "%{$q}%")
-                        ->orWhere('url', 'like', "%{$q}%");
+                    $inner->whereLike('platform', "%{$q}%", caseSensitive: false)
+                        ->orWhereLike('url', "%{$q}%", caseSensitive: false);
                 });
             })
             ->orderBy('order')

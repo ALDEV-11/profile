@@ -38,11 +38,20 @@ return [
             'report' => false,
         ],
 
+        // Public uploads. Local disk for development, S3-compatible
+        // object storage (Cloudflare R2, AWS S3, Vercel Blob) in production.
+        // Note: no visibility option is set because R2 does not support
+        // per-object ACLs; public read access is configured on the bucket.
         'public' => [
-            'driver' => 'local',
+            'driver' => env('PUBLIC_DISK_DRIVER', 'local'),
             'root' => storage_path('app/public'),
-            'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
-            'visibility' => 'public',
+            'url' => env('PUBLIC_DISK_URL', rtrim(env('APP_URL', 'http://localhost'), '/').'/storage'),
+            'key' => env('AWS_ACCESS_KEY_ID'),
+            'secret' => env('AWS_SECRET_ACCESS_KEY'),
+            'region' => env('AWS_DEFAULT_REGION'),
+            'bucket' => env('AWS_BUCKET'),
+            'endpoint' => env('AWS_ENDPOINT'),
+            'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => false,
             'report' => false,
         ],

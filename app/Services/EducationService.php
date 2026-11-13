@@ -19,9 +19,9 @@ class EducationService
             ->where('user_id', $userId)
             ->when($filters['q'] ?? null, function (Builder $query, string $q) {
                 $query->where(function (Builder $inner) use ($q) {
-                    $inner->where('institution', 'like', "%{$q}%")
-                        ->orWhere('field_of_study', 'like', "%{$q}%")
-                        ->orWhere('degree', 'like', "%{$q}%");
+                    $inner->whereLike('institution', "%{$q}%", caseSensitive: false)
+                        ->orWhereLike('field_of_study', "%{$q}%", caseSensitive: false)
+                        ->orWhereLike('degree', "%{$q}%", caseSensitive: false);
                 });
             })
             ->orderByDesc('start_date')

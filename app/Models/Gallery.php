@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 #[Fillable(['user_id', 'image_path', 'caption', 'category', 'order'])]
@@ -59,7 +60,9 @@ class Gallery extends Model
             default => '-large.jpg',
         };
 
-        return asset('storage/'.Str::replaceLast('-large.jpg', $suffix, $this->image_path));
+        return Storage::disk('public')->url(
+            Str::replaceLast('-large.jpg', $suffix, $this->image_path)
+        );
     }
 
     /**

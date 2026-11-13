@@ -18,6 +18,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Vercel terminates TLS in front of the function; trust its
+        // forwarded IP/proto headers so $request->ip() and secure URLs work.
+        $middleware->trustProxies(at: '*');
+
         $middleware->alias([
             'two-factor' => VerifyTwoFactorAuth::class,
             'track.visitors' => TrackVisitors::class,

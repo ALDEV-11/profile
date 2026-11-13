@@ -12,6 +12,8 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SocialMediaController;
 use App\Http\Controllers\TwoFactorController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 // ============================================================
@@ -26,6 +28,17 @@ Route::middleware('track.visitors')->group(function () {
         ->middleware('throttle:5,60')
         ->name('contact.store');
 });
+
+// Vercel Cron: protected by CRON_SECRET, which Vercel sends as a Bearer token.
+Route::get('cron/visitors-cleanup', function (Request $request) {
+    $secret = (string) config('services.cron.secret');
+
+    abort_if($secret === '' || ! hash_equals($secret, (string) $request->bearerToken()), 403);
+
+    Artisan::call('visitors:cleanup');
+
+    return response()->noContent();
+})->name('cron.visitors-cleanup');
 
 // Admin section (kept under the "222" prefix)
 Route::prefix('222')->group(function () {
