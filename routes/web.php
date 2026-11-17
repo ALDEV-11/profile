@@ -36,6 +36,10 @@ Route::get('cron/visitors-cleanup', [CronController::class, 'visitorsCleanup'])
 Route::get('cron/keepalive', [CronController::class, 'keepalive'])
     ->name('cron.keepalive');
 
+// Temporary deploy check for object storage; removed after verification.
+Route::get('cron/storage-check', [CronController::class, 'storageCheck'])
+    ->name('cron.storage-check');
+
 // Admin section (kept under the "222" prefix)
 Route::prefix('222')->group(function () {
     // ── Authentication (guests only) ──────────────────

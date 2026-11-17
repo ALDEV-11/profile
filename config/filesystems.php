@@ -5,6 +5,18 @@
 // "app/storage/app/public/..." and expose that path in generated URLs.
 $publicDiskDriver = env('PUBLIC_DISK_DRIVER', 'local');
 
+// Vercel reserves the AWS_* names for its own runtimes, so the credentials
+// set in the dashboard never reach the application under those names. Use
+// STORAGE_* first and keep AWS_* as a fallback for local development.
+$storageConfig = [
+    'key' => env('STORAGE_KEY', env('AWS_ACCESS_KEY_ID')),
+    'secret' => env('STORAGE_SECRET', env('AWS_SECRET_ACCESS_KEY')),
+    'region' => env('STORAGE_REGION', env('AWS_DEFAULT_REGION', 'us-east-1')),
+    'bucket' => env('STORAGE_BUCKET', env('AWS_BUCKET')),
+    'endpoint' => env('STORAGE_ENDPOINT', env('AWS_ENDPOINT')),
+    'use_path_style_endpoint' => env('STORAGE_PATH_STYLE', env('AWS_USE_PATH_STYLE_ENDPOINT', false)),
+];
+
 return [
 
     /*
@@ -51,25 +63,25 @@ return [
             'driver' => $publicDiskDriver,
             'root' => $publicDiskDriver === 'local' ? storage_path('app/public') : '',
             'url' => env('PUBLIC_DISK_URL', rtrim(env('APP_URL', 'http://localhost'), '/').'/storage'),
-            'key' => env('AWS_ACCESS_KEY_ID'),
-            'secret' => env('AWS_SECRET_ACCESS_KEY'),
-            'region' => env('AWS_DEFAULT_REGION'),
-            'bucket' => env('AWS_BUCKET'),
-            'endpoint' => env('AWS_ENDPOINT'),
-            'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
+            'key' => $storageConfig['key'],
+            'secret' => $storageConfig['secret'],
+            'region' => $storageConfig['region'],
+            'bucket' => $storageConfig['bucket'],
+            'endpoint' => $storageConfig['endpoint'],
+            'use_path_style_endpoint' => $storageConfig['use_path_style_endpoint'],
             'throw' => false,
             'report' => false,
         ],
 
         's3' => [
             'driver' => 's3',
-            'key' => env('AWS_ACCESS_KEY_ID'),
-            'secret' => env('AWS_SECRET_ACCESS_KEY'),
-            'region' => env('AWS_DEFAULT_REGION'),
-            'bucket' => env('AWS_BUCKET'),
+            'key' => $storageConfig['key'],
+            'secret' => $storageConfig['secret'],
+            'region' => $storageConfig['region'],
+            'bucket' => $storageConfig['bucket'],
             'url' => env('AWS_URL'),
-            'endpoint' => env('AWS_ENDPOINT'),
-            'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
+            'endpoint' => $storageConfig['endpoint'],
+            'use_path_style_endpoint' => $storageConfig['use_path_style_endpoint'],
             'throw' => false,
             'report' => false,
         ],

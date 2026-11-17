@@ -53,12 +53,17 @@ php artisan data:import storage/app/private/exports/portfolio.json --force --env
 ```dotenv
 PUBLIC_DISK_DRIVER=s3
 PUBLIC_DISK_URL=https://pub-xxxx.r2.dev
-AWS_ACCESS_KEY_ID=<r2-access-key>
-AWS_SECRET_ACCESS_KEY=<r2-secret-key>
-AWS_DEFAULT_REGION=auto
-AWS_BUCKET=profile-assets
-AWS_ENDPOINT=https://<account-id>.r2.cloudflarestorage.com
-AWS_USE_PATH_STYLE_ENDPOINT=true
+STORAGE_KEY=<r2-access-key>
+STORAGE_SECRET=<r2-secret-key>
+STORAGE_REGION=auto
+STORAGE_BUCKET=profile-assets
+STORAGE_ENDPOINT=https://<account-id>.r2.cloudflarestorage.com
+STORAGE_PATH_STYLE=true
+
+> Gunakan nama `STORAGE_*` di Vercel. `AWS_ACCESS_KEY_ID` dan
+> `AWS_SECRET_ACCESS_KEY` dicadangkan runtime Vercel sehingga nilai yang
+> diisi di dashboard tidak sampai ke aplikasi. `config/filesystems.php`
+> masih membaca `AWS_*` sebagai fallback untuk pengembangan lokal.
 ```
 
 > `PUBLIC_DISK_DRIVER` dan `PUBLIC_DISK_URL` wajib diisi di Vercel. Tanpa dua
@@ -119,12 +124,17 @@ QUEUE_CONNECTION=deferred
 
 PUBLIC_DISK_DRIVER=s3
 PUBLIC_DISK_URL=https://pub-xxxx.r2.dev
-AWS_ACCESS_KEY_ID=<r2-access-key>
-AWS_SECRET_ACCESS_KEY=<r2-secret-key>
-AWS_DEFAULT_REGION=auto
-AWS_BUCKET=profile-assets
-AWS_ENDPOINT=https://<account-id>.r2.cloudflarestorage.com
-AWS_USE_PATH_STYLE_ENDPOINT=true
+STORAGE_KEY=<r2-access-key>
+STORAGE_SECRET=<r2-secret-key>
+STORAGE_REGION=auto
+STORAGE_BUCKET=profile-assets
+STORAGE_ENDPOINT=https://<account-id>.r2.cloudflarestorage.com
+STORAGE_PATH_STYLE=true
+
+> Gunakan nama `STORAGE_*` di Vercel. `AWS_ACCESS_KEY_ID` dan
+> `AWS_SECRET_ACCESS_KEY` dicadangkan runtime Vercel sehingga nilai yang
+> diisi di dashboard tidak sampai ke aplikasi. `config/filesystems.php`
+> masih membaca `AWS_*` sebagai fallback untuk pengembangan lokal.
 
 MAIL_MAILER=resend
 RESEND_API_KEY=re_xxxxxxxx

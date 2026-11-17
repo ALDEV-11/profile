@@ -14,7 +14,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Without credentials the AWS SDK probes the EC2 metadata service.
+        // Vercel and containers have none, so the probe blocks for 60s before
+        // the upload fails. Disable it so storage errors surface immediately.
+        if (getenv('AWS_EC2_METADATA_DISABLED') === false) {
+            putenv('AWS_EC2_METADATA_DISABLED=true');
+        }
     }
 
     /**
