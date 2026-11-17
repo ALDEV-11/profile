@@ -32,7 +32,7 @@ class Profile extends Model
     public function imageUrl(): string
     {
         if (empty($this->profile_image)) {
-            return asset('images/profile-avatar.png');
+            return asset('images/profile-avatar.webp');
         }
 
         if (Str::startsWith($this->profile_image, ['profiles/', 'galleries/'])) {

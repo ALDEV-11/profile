@@ -21,9 +21,8 @@ class AdminLayoutComposer
 
         $view->with([
             'adminName' => $user?->name,
-            'adminAvatar' => ! empty($profile?->profile_image)
-                ? asset($profile->profile_image)
-                : asset('dist-dashboard/assets/img/avatars/1.png'),
+            'adminAvatar' => $profile?->imageUrl()
+                ?? asset('dist-dashboard/assets/img/avatars/1.png'),
             'unreadMessages' => $this->dashboard->unreadCount(),
             'recentMessages' => $this->dashboard->recentMessages(),
         ]);

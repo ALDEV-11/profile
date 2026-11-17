@@ -22,10 +22,7 @@
 
                 <div class="hero-image-wrapper">
                     <div class="hero-avatar-frame">
-                        <picture>
-                            <source srcset="{{ asset('images/profile-avatar.webp') }}" type="image/webp">
-                            <img src="{{ $profileImage }}" alt="{{ $fullName }}" class="hero-avatar-img" fetchpriority="high" decoding="async" width="300" height="300" />
-                        </picture>
+                        <img src="{{ $profileImage }}" alt="{{ $fullName }}" class="hero-avatar-img" fetchpriority="high" decoding="async" width="300" height="300" />
                     </div>
                 </div>
             </div>

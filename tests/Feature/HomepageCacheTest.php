@@ -59,4 +59,28 @@ class HomepageCacheTest extends TestCase
 
         $this->get('/')->assertOk()->assertSee('After Edit');
     }
+
+    public function test_hero_uses_the_uploaded_profile_image_instead_of_the_static_file(): void
+    {
+        config(['filesystems.disks.public.url' => 'https://cdn.example.com']);
+
+        Profile::factory()->create([
+            'full_name' => 'Custom Avatar',
+            'profile_image' => 'profiles/custom-avatar.jpg',
+        ]);
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('https://cdn.example.com/profiles/custom-avatar.jpg', false)
+            ->assertDontSee('images/profile-avatar.webp', false);
+    }
+
+    public function test_hero_falls_back_to_the_optimised_static_avatar(): void
+    {
+        Profile::factory()->create(['profile_image' => null]);
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee(asset('images/profile-avatar.webp'), false);
+    }
 }

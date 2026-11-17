@@ -24,7 +24,7 @@
     <link rel="icon" type="image/png" href="{{ asset('images/aldev-favicon.png') }}" />
 
     <!-- Preload Critical LCP Hero Image -->
-    <link rel="preload" as="image" href="{{ asset('images/profile-avatar.webp') }}" type="image/webp" fetchpriority="high" />
+    <link rel="preload" as="image" href="{{ $profileImage }}" fetchpriority="high" />
 
     <!-- Google Fonts & CDN Preconnect -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />

@@ -61,6 +61,11 @@ AWS_ENDPOINT=https://<account-id>.r2.cloudflarestorage.com
 AWS_USE_PATH_STYLE_ENDPOINT=true
 ```
 
+> `PUBLIC_DISK_DRIVER` dan `PUBLIC_DISK_URL` wajib diisi di Vercel. Tanpa dua
+> variabel ini Laravel memakai disk lokal container yang ephemeral: data tetap
+> masuk database, tetapi file gambar akan hilang setelah restart/redeploy dan
+> URL `/storage/...` menghasilkan 404.
+
 5. Upload gambar lama (7 set gallery + foto profile):
 
 ```bash
@@ -134,6 +139,11 @@ PUSHER_APP_CLUSTER=ap1
 
 CRON_SECRET=<openssl rand -hex 32>
 ```
+
+> `PUBLIC_DISK_DRIVER` dan `PUBLIC_DISK_URL` wajib diisi di Vercel. Tanpa dua
+> variabel ini Laravel memakai disk lokal container yang ephemeral: data tetap
+> masuk database, tetapi file gambar akan hilang setelah restart/redeploy dan
+> URL `/storage/...` menghasilkan 404.
 
 ## 5. Pengaturan project Vercel
 
