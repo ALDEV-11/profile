@@ -8,6 +8,7 @@ use App\Models\Gallery;
 use App\Models\User;
 use App\Models\Visitor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
 
 class DashboardControllerTest extends TestCase
@@ -68,5 +69,33 @@ class DashboardControllerTest extends TestCase
             ->assertOk()
             ->assertSee('Welcome back')
             ->assertSee($user->name);
+    }
+
+    public function test_dashboard_cache_stores_plain_arrays(): void
+    {
+        $this->actingAsAdmin();
+        ContactMessage::factory()->count(2)->create();
+
+        $this->get(route('dashboard'))->assertOk();
+
+        $overview = Cache::get('admin.dashboard.overview');
+        $recent = Cache::get('admin.messages.recent');
+
+        $this->assertIsArray($overview);
+        $this->assertIsArray($overview['recentMessages']);
+        $this->assertIsArray($overview['recentMessages'][0]);
+        $this->assertIsArray($recent);
+        $this->assertIsArray($recent[0]);
+    }
+
+    public function test_dashboard_renders_from_the_cache_on_the_second_request(): void
+    {
+        $this->actingAsAdmin();
+
+        Visitor::factory()->count(2)->create(['device_type' => DeviceType::Desktop]);
+        ContactMessage::factory()->create();
+
+        $this->get(route('dashboard'))->assertOk()->assertSee('2');
+        $this->get(route('dashboard'))->assertOk()->assertSee('2');
     }
 }

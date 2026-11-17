@@ -27,16 +27,20 @@ class DashboardService
      */
     public function overview(): array
     {
-        return Cache::remember('admin.dashboard.overview', now()->addSeconds(self::TTL), function () {
+        $data = Cache::remember('admin.dashboard.overview', now()->addSeconds(self::TTL), function () {
             return [
                 'totalVisitors' => $this->visitors->total(),
                 'totalMessages' => ContactMessage::query()->count(),
-                'unreadMessages' => $this->unreadCount(),
+                'unreadMessages' => ContactMessage::unread()->count(),
                 'galleryCount' => Gallery::query()->count(),
-                'recentMessages' => $this->recentMessages(),
+                'recentMessages' => $this->recentMessageRows(),
                 'visitorTrend' => $this->visitors->dailyCounts(30),
             ];
         });
+
+        $data['recentMessages'] = ContactMessage::hydrate($data['recentMessages']);
+
+        return $data;
     }
 
     /**
@@ -56,8 +60,26 @@ class DashboardService
      */
     public function recentMessages(): Collection
     {
-        return Cache::remember('admin.messages.recent', now()->addSeconds(self::TTL), function () {
-            return ContactMessage::query()->latest('id')->limit(5)->get();
+        $rows = Cache::remember('admin.messages.recent', now()->addSeconds(self::TTL), function () {
+            return $this->recentMessageRows();
         });
+
+        return ContactMessage::hydrate($rows);
+    }
+
+    /**
+     * Raw rows for the cached payload. Eloquent instances do not survive
+     * unserialization with the container's optimized autoloader.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    private function recentMessageRows(): array
+    {
+        return ContactMessage::query()
+            ->latest('id')
+            ->limit(5)
+            ->get()
+            ->map(fn (ContactMessage $message) => $message->getAttributes())
+            ->all();
     }
 }
