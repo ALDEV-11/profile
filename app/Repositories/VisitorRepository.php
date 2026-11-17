@@ -19,15 +19,40 @@ class VisitorRepository
      */
     public function record(Request $request): bool
     {
+        return $this->recordPayload($this->payload($request));
+    }
+
+    /**
+     * Build the visitor row from the request.
+     *
+     * The payload is captured before the response is sent so the deferred
+     * insert never touches the request object after termination.
+     *
+     * @return array<string, mixed>
+     */
+    public function payload(Request $request): array
+    {
+        return [
+            'ip_address' => $request->ip(),
+            'user_agent' => Str::limit((string) $request->userAgent(), 500),
+            'page_visited' => Str::limit($request->path(), 255),
+            'referer' => Str::limit((string) $request->headers->get('referer'), 255) ?: null,
+            'device_type' => app(DeviceDetector::class)->detect((string) $request->userAgent()),
+            'visited_at' => now(),
+        ];
+    }
+
+    /**
+     * Persist a previously captured visitor payload.
+     *
+     * Never throws: tracking must never break the request cycle.
+     *
+     * @param  array<string, mixed>  $payload
+     */
+    public function recordPayload(array $payload): bool
+    {
         try {
-            Visitor::query()->create([
-                'ip_address' => $request->ip(),
-                'user_agent' => Str::limit((string) $request->userAgent(), 500),
-                'page_visited' => Str::limit($request->path(), 255),
-                'referer' => Str::limit((string) $request->headers->get('referer'), 255) ?: null,
-                'device_type' => app(DeviceDetector::class)->detect((string) $request->userAgent()),
-                'visited_at' => now(),
-            ]);
+            Visitor::query()->create($payload);
 
             return true;
         } catch (\Throwable $e) {

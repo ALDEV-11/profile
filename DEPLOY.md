@@ -24,11 +24,15 @@ DB_USERNAME=<user>
 DB_PASSWORD=<password>
 DB_SSLMODE=require
 
-SESSION_DRIVER=database
+SESSION_DRIVER=cookie
 SESSION_SECURE_COOKIE=true
-CACHE_STORE=database
+CACHE_STORE=file
 QUEUE_CONNECTION=deferred
 ```
+
+> Session dan cache **jangan** memakai database Neon. Setiap request akan
+> membayar round-trip ke database, dan Neon yang sedang suspend bisa menambah
+> beberapa detik. Pakai `cookie` + `file` untuk deployment single-container.
 
 4. Jalankan migrasi dan import data:
 
@@ -101,9 +105,11 @@ DB_USERNAME=<user>
 DB_PASSWORD=<password>
 DB_SSLMODE=require
 
-SESSION_DRIVER=database
+# Session disimpan di cookie terenkripsi dan cache di filesystem container.
+# Ini menghilangkan query session/cache ke Neon pada setiap request.
+SESSION_DRIVER=cookie
 SESSION_SECURE_COOKIE=true
-CACHE_STORE=database
+CACHE_STORE=file
 QUEUE_CONNECTION=deferred
 
 PUBLIC_DISK_DRIVER=s3
@@ -134,15 +140,24 @@ CRON_SECRET=<openssl rand -hex 32>
 1. **Framework Preset → Container** (bukan Vite).
 2. **Root Directory → `.`**.
 3. **Build Command / Output Directory → kosongkan** (container yang menangani build).
-4. **Functions Region → Singapore (`sin1`)**.
+4. **Sandbox Region → Singapore (`sin1`)** dan **Functions Region → Singapore (`sin1`)**.
+   Container service memakai Sandbox Region; kalau masih `iad1`, PHP akan
+   menyeberang ke Neon Singapore pada setiap query. Cek build log: harus
+   `services/app/container [sin1]`, bukan `[iad1]`.
 5. Pastikan `Dockerfile`, `Caddyfile`, `vercel.json`, dan `docker/php.ini` ada di root repo.
 6. Deploy ulang.
 
 `vercel.json` sudah mengatur:
 
 - service container `app` dari `Dockerfile`;
+- region `sin1` untuk function/service;
 - rewrite semua request ke service tersebut;
 - cron harian `/cron/visitors-cleanup` pukul 03:00 UTC.
+
+> Vercel Hobby hanya mendukung cron harian. Untuk mencegah Neon auto-suspend,
+> panggil `/cron/keepalive` dari cron eksternal (UptimeRobot, cron-job.org)
+> setiap 4–5 menit dengan header `Authorization: Bearer <CRON_SECRET>`.
+> Kalau paket Neon mendukung, matikan auto-suspend sekalian.
 
 ## 6. Smoke test setelah deploy
 
@@ -158,14 +173,31 @@ CRON_SECRET=<openssl rand -hex 32>
 ```bash
 curl -i https://<project>.vercel.app/cron/visitors-cleanup \
   -H "Authorization: Bearer <CRON_SECRET>"
+
+curl -i https://<project>.vercel.app/cron/keepalive \
+  -H "Authorization: Bearer <CRON_SECRET>"
 ```
 
-Harus `204 No Content`.
+Keduanya harus `204 No Content`.
+
+Cek performa server (bukan Lighthouse):
+
+```bash
+curl -sS -o /dev/null -w 'home ttfb=%{time_starttransfer}s\n' https://<project>.vercel.app/
+curl -sS -o /dev/null -w 'login ttfb=%{time_starttransfer}s\n' https://<project>.vercel.app/222/auth/login
+```
+
+`x-vercel-id` seharusnya `sin1::sin1`, bukan `sin1::iad1`.
 
 ## Catatan
 
 - Jangan menjalankan migrasi saat container start; jalankan sekali dari lokal/CI.
 - Filesystem container tidak persisten. Semua upload harus lewat R2.
+- Cache `file` bersifat per-instance. Kalau nanti memakai banyak instance atau
+  butuh rate limit yang konsisten, pindah ke Redis/Upstash di region Singapore.
+- Session driver `cookie` membuat semua admin logout sekali setelah diganti.
+- `route:cache` dan `view:cache` sudah dijalankan saat build Docker. Jangan
+  menambahkan closure baru ke `routes/web.php` tanpa menjalankan ulang cache.
 - Request body Vercel maksimal 4.5 MB; validasi upload aplikasi 4 MB.
 - Kalau email OTP gagal, cek `RESEND_API_KEY`, alamat pengirim, dan log runtime Vercel.
 - Kalau halaman 502, cek `Caddyfile` tetap memakai `:{$PORT:80}` dan container listen di port yang benar.

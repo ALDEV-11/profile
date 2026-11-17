@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\ClearsContentCaches;
 use Database\Factories\EducationFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -26,7 +27,7 @@ class Education extends Model
     protected $table = 'educations';
 
     /** @use HasFactory<EducationFactory> */
-    use HasFactory, SoftDeletes;
+    use ClearsContentCaches, HasFactory, SoftDeletes;
 
     /**
      * Get the attributes that should be cast.

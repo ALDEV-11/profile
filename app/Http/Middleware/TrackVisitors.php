@@ -16,16 +16,17 @@ class TrackVisitors
     /**
      * Handle an incoming request.
      *
-     * Records anonymous analytics data for every public page load.
-     * Runs after the response is generated so tracking never slows
-     * down the actual page rendering, and never crashes the request.
+     * The visitor insert is deferred until after the response has been sent,
+     * so analytics never add a database round-trip to the page TTFB.
      */
     public function handle(Request $request, Closure $next): Response
     {
         $response = $next($request);
 
         if ($this->shouldTrack($request)) {
-            $this->repository->record($request);
+            $payload = $this->repository->payload($request);
+
+            defer(fn () => $this->repository->recordPayload($payload));
         }
 
         return $response;

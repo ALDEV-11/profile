@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\ClearsContentCaches;
 use Database\Factories\SocialMediaFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -16,7 +17,7 @@ class SocialMedia extends Model
     protected $table = 'social_medias';
 
     /** @use HasFactory<SocialMediaFactory> */
-    use HasFactory, SoftDeletes;
+    use ClearsContentCaches, HasFactory, SoftDeletes;
 
     public function user(): BelongsTo
     {

@@ -53,11 +53,12 @@ class ImageService
             return;
         }
 
-        $disk = Storage::disk('public');
-
-        if ($disk->exists($path)) {
-            $disk->delete($path);
+        if (! Str::startsWith($path, ['profiles/', 'galleries/'])) {
+            return;
         }
+
+        // R2/S3 delete is idempotent, so skip the extra HEAD request.
+        Storage::disk('public')->delete($path);
     }
 
     /**

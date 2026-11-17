@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\GalleryCategory;
+use App\Support\ClearsContentCaches;
 use Database\Factories\GalleryFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -17,7 +18,7 @@ use Illuminate\Support\Str;
 class Gallery extends Model
 {
     /** @use HasFactory<GalleryFactory> */
-    use HasFactory, SoftDeletes;
+    use ClearsContentCaches, HasFactory, SoftDeletes;
 
     /**
      * Get the attributes that should be cast.

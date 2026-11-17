@@ -24,9 +24,9 @@ class AppServiceProvider extends ServiceProvider
     {
         // URL::forceScheme('https');a
 
-        View::composer(
-            ['admin.layouts.admin-header', 'admin.layouts.admin-sidebar'],
-            AdminLayoutComposer::class,
-        );
+        // Register once on the layout. The header and sidebar are included
+        // from it, so this prevents the unread/recent queries from running
+        // twice per admin page.
+        View::composer('admin.layouts.admin-layout', AdminLayoutComposer::class);
     }
 }

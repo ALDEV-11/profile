@@ -51,7 +51,10 @@ RUN mkdir -p \
         storage/framework/views \
         storage/logs \
         bootstrap/cache \
-    && composer dump-autoload --no-dev --classmap-authoritative
+    && rm -f bootstrap/cache/*.php \
+    && composer dump-autoload --no-dev --classmap-authoritative \
+    && php artisan view:cache \
+    && php artisan route:cache
 
 # ---------------------------------------------------------------------------
 # 4. Runtime image

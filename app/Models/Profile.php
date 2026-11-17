@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\ClearsContentCaches;
 use Database\Factories\ProfileFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,7 +15,7 @@ use Illuminate\Support\Str;
 class Profile extends Model
 {
     /** @use HasFactory<ProfileFactory> */
-    use HasFactory;
+    use ClearsContentCaches, HasFactory;
 
     public function user(): BelongsTo
     {

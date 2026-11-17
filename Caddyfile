@@ -2,6 +2,22 @@
     root * /app/public
     encode zstd gzip
 
+    # Vite output uses hashed filenames, so it is safe to cache forever.
+    @v4Assets path /build/*
+    header @v4Assets Cache-Control "public, max-age=31536000, immutable"
+    header @v4Assets Vercel-CDN-Cache-Control "public, s-maxage=31536000, immutable"
+
+    # Admin theme assets keep their names between deploys; a day of browser
+    # caching still removes them from nearly every navigation.
+    @themeAssets path /dist-dashboard/assets/*
+    header @themeAssets Cache-Control "public, max-age=86400, stale-while-revalidate=604800"
+    header @themeAssets Vercel-CDN-Cache-Control "public, s-maxage=86400, stale-while-revalidate=604800"
+
+    # Non-hashed public assets: cache briefly, then revalidate in the background.
+    @staticAssets path /css/* /js/* /images/*
+    header @staticAssets Cache-Control "public, max-age=3600, stale-while-revalidate=86400"
+    header @staticAssets Vercel-CDN-Cache-Control "public, s-maxage=3600, stale-while-revalidate=86400"
+
     php_server {
         try_files {path} index.php
     }

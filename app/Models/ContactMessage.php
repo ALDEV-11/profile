@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\ClearsContentCaches;
 use Database\Factories\ContactMessageFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -14,9 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class ContactMessage extends Model
 {
     /** @use HasFactory<ContactMessageFactory> */
-    use HasFactory;
-
-    use SoftDeletes;
+    use ClearsContentCaches, HasFactory, SoftDeletes;
 
     /**
      * Get the attributes that should be cast.

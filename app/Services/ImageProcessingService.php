@@ -64,9 +64,11 @@ class ImageProcessingService
     public function generateGallerySizes(UploadedFile $file, string $directory = 'galleries'): string
     {
         $slug = Str::uuid();
+        $image = $this->decode($file);
 
-        foreach (self::SIZES as $name => $maxEdge) {
-            $image = $this->decode($file);
+        // Resize from the largest variant down. Intervention resizes the
+        // image in place, so one decode is enough for all three files.
+        foreach (array_reverse(self::SIZES, true) as $name => $maxEdge) {
             $variant = $this->resize($image, $maxEdge);
             $encoded = $this->optimize($variant);
 
@@ -94,15 +96,13 @@ class ImageProcessingService
             return;
         }
 
-        $disk = Storage::disk('public');
         $base = Str::replaceLast('-large.jpg', '', $largePath);
 
-        foreach (array_keys(self::SIZES) as $name) {
-            $path = "{$base}-{$name}.jpg";
-
-            if ($disk->exists($path)) {
-                $disk->delete($path);
-            }
-        }
+        // Object storage deletes are idempotent; a HEAD request per variant
+        // only doubles the number of round-trips to R2.
+        Storage::disk('public')->delete(array_map(
+            fn (string $name) => "{$base}-{$name}.jpg",
+            array_keys(self::SIZES),
+        ));
     }
 }
