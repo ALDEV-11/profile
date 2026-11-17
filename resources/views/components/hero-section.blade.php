@@ -22,7 +22,7 @@
 
                 <div class="hero-image-wrapper">
                     <div class="hero-avatar-frame">
-                        <img src="{{ $profileImage }}" alt="{{ $fullName }}" class="hero-avatar-img" />
+                        <img src="{{ $profileImage }}" alt="{{ $fullName }}" class="hero-avatar-img" fetchpriority="high" decoding="async" width="300" height="300" />
                     </div>
                 </div>
             </div>
