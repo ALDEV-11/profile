@@ -1,5 +1,10 @@
 <?php
 
+// On S3 the "root" value becomes the object key prefix. Keeping the local
+// storage path there would upload every image under
+// "app/storage/app/public/..." and expose that path in generated URLs.
+$publicDiskDriver = env('PUBLIC_DISK_DRIVER', 'local');
+
 return [
 
     /*
@@ -43,8 +48,8 @@ return [
         // Note: no visibility option is set because R2 does not support
         // per-object ACLs; public read access is configured on the bucket.
         'public' => [
-            'driver' => env('PUBLIC_DISK_DRIVER', 'local'),
-            'root' => storage_path('app/public'),
+            'driver' => $publicDiskDriver,
+            'root' => $publicDiskDriver === 'local' ? storage_path('app/public') : '',
             'url' => env('PUBLIC_DISK_URL', rtrim(env('APP_URL', 'http://localhost'), '/').'/storage'),
             'key' => env('AWS_ACCESS_KEY_ID'),
             'secret' => env('AWS_SECRET_ACCESS_KEY'),
