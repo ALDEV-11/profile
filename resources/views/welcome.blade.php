@@ -23,18 +23,21 @@
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{{ asset('images/aldev-favicon.png') }}" />
 
+    <!-- Preload Critical LCP Hero Image -->
+    <link rel="preload" as="image" href="{{ asset('images/profile-avatar.webp') }}" type="image/webp" fetchpriority="high" />
+
     <!-- Google Fonts & CDN Preconnect -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
 
     <!-- Boxicons Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css" />
 
-    <!-- SweetAlert2 CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
+    <!-- SweetAlert2 CSS (non-blocking) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" /></noscript>
 
     <!-- Stylesheet -->
     <link rel="stylesheet" href="{{ asset('css/style.css') }}" />
