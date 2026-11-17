@@ -26,7 +26,10 @@ class HomeController extends Controller
      */
     public function index(): View
     {
-        $data = Cache::remember('home.page.data', now()->addMinutes(10), function () {
+        // File cache is per container, so an edit made on one instance can
+        // leave another instance stale. Keep the TTL short; the model events
+        // still clear the cache immediately on the instance that saves.
+        $data = Cache::remember('home.page.data', now()->addMinute(), function () {
             return [
                 'profile' => Profile::query()->first()?->getAttributes(),
                 'socialMedias' => $this->attributes(SocialMedia::ordered()->get()),
