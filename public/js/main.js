@@ -202,11 +202,11 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     let phraseIndex = 0;
-    let charIndex = 0;
-    let isDeleting = false;
+    let charIndex = primaryTagline.length;
+    let isDeleting = true;
     const typingSpeed = 80;
     const deletingSpeed = 40;
-    const pauseDuration = 2200;
+    const pauseDuration = 3000;
 
     function typeEffect() {
       const currentPhrase = phrases[phraseIndex];
@@ -233,7 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(typeEffect, nextSpeed);
     }
 
-    typeEffect();
+    setTimeout(typeEffect, pauseDuration);
   }
 
   /* ==========================================================================

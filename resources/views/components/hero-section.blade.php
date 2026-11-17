@@ -6,7 +6,7 @@
                         Hi, I'm <span class="text-gradient">{{ $fullName }}</span>
                     </h1>
                     <p class="hero-tagline">
-                        <span id="typedTagline" data-primary="{{ $tagline }}"></span><span class="typing-cursor">|</span>
+                        <span id="typedTagline" data-primary="{{ $tagline }}">{{ $tagline }}</span><span class="typing-cursor">|</span>
                     </p>
                     <p class="hero-description">{{ Str::words($aboutMe, 25) }}</p>
 

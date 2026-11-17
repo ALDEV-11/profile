@@ -30,8 +30,8 @@
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
 
-    <!-- Boxicons Icons (Fast CDN via cdnjs) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css" integrity="sha512-cn16Qw8nLKWqbhbKigPnZKmGFhUMHgU/284s2/5v9UVG3OOniP228PtxoClbqDT8LQOgiUUKPXKQU/ZqNopQUQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Boxicons Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css" />
 
     <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
